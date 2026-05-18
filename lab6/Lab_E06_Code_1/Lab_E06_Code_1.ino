@@ -2,9 +2,9 @@
 #include <Stepper.h>
 
 // Pins
-const byte BTN_PINS[2] = {2, 3};        // array with two button pins; P1 = D2, P2 = D3
-const byte BUZZER_PIN = 4;              // buzzer output pin as pin 4
-const byte SERVO_PIN  = 5;              // servo signal pin as pin 5
+const byte BTN_PINS[2] = {6, 5};        // array with two button pins; P1 = D6, P2 = D5
+const byte BUZZER_PIN = 3;              // buzzer output pin as pin 3
+const byte SERVO_PIN  = 12;             // servo signal pin as pin 12
 const byte STEP_PINS[4] = {8, 9, 10, 11}; // stepper motor pins for ULN2003 IN1, IN2, IN3, IN4
 
 // Servo - 20 ms/ 50 hz / Stepper
@@ -17,7 +17,7 @@ const int SERVO_POS[3] = {              // array with servo positions
 };
 
 const int STEPS_PER_REV = 2048;         // one full stepper revolution
-Stepper stepperMotor(STEPS_PER_REV, STEP_PINS[0], STEP_PINS[2], STEP_PINS[1], STEP_PINS[3]); // create stepper object with correct pin order
+Stepper stepperMotor(STEPS_PER_REV, STEP_PINS[3], STEP_PINS[1], STEP_PINS[2], STEP_PINS[0]); // create stepper object with correct pin order
 
 // Game settings
 const unsigned long WAIT_MIN_MS = 1000; // minimum hidden waiting time = 1 sec
@@ -49,9 +49,9 @@ struct Button {                        // structure for storing button data
 };
 
 // {pin, lastReading, stableState, lastChange}
-Button btn[2] = {                       // create array with two button objects
-  {BTN_PINS[0], HIGH, HIGH, 0},         // button object for player 1
-  {BTN_PINS[1], HIGH, HIGH, 0}          // button object for player 2
+Button btn[2] = {                     // create array with two button objects
+  {BTN_PINS[0], LOW, LOW, 0},         // button object for player 1
+  {BTN_PINS[1], LOW, LOW, 0}          // button object for player 2
 };
 
 // Helpers
@@ -78,7 +78,7 @@ bool pressed(Button &b) {              // function for detecting one clean butto
   if (millis() - b.lastChange > DEBOUNCE_MS) { // check if signal stayed stable enough
     if (r != b.stableState) {          // check if stable state changed
       b.stableState = r;               // update stable state
-      if (r == LOW) return true;       // INPUT_PULLUP; LOW means button pressed
+      if (r == HIGH) return true;      // HIGH means button pressed
     }
   }
 
@@ -230,7 +230,7 @@ void serviceGame() {                    // main game logic function
 
 // Setup / Loop
 void setup() {
-  for (byte i = 0; i < 2; i++) pinMode(BTN_PINS[i], INPUT_PULLUP); // set both button pins as input with pull-up
+  for (byte i = 0; i < 2; i++) pinMode(BTN_PINS[i], INPUT); // set both button pins as input
   pinMode(BUZZER_PIN, OUTPUT);       // set buzzer pin as output
   digitalWrite(BUZZER_PIN, LOW);     // turn buzzer OFF at start
 
